@@ -36,16 +36,22 @@ import (
 
 // Known animals are stored in a binary tree that grows over time
 type node struct {
-	Animal   string // leaf only
-	Question string // non-leaf only
-	No, Yes  *node  // children
+	// Non-leaves store yes-or-no questions partitioning the animals stored
+	// in the children into two sets.
+	Question string
+
+	// Leaves store animals.
+	Animal   string
+
+	// Children
+	No, Yes  *node
 }
 
 func (n *node) isLeaf() bool {
 	return n.Animal != ""
 }
 
-// Knowledge base root
+// Tree root
 var root *node
 
 // Default initial tree content when creating new database
@@ -62,9 +68,9 @@ var stdin *bufio.Reader
 func main() {
 	parseCmdLine()
 	stdin = bufio.NewReader(os.Stdin)
-	initDb()
+	initTree()
 	playGames()
-	saveDb()
+	saveTree()
 }
 
 func parseCmdLine() {
@@ -83,8 +89,8 @@ func usage() {
 	flag.PrintDefaults()
 }
 
-// Create a new database or load an existing one
-func initDb() {
+// Populate the knowledge tree from user-specified file or create it from scratch
+func initTree() {
 	if *createDbFlag {
 		root = &defaultRoot
 	} else {
@@ -100,8 +106,8 @@ func initDb() {
 	}
 }
 
-// Save the current database to a file
-func saveDb() {
+// Save tree to user-specified file
+func saveTree() {
 	content, err := json.MarshalIndent(root, "", "    ")
 	if err != nil {
 		log.Panic("can not unmarshal db:", err)
@@ -113,6 +119,7 @@ func saveDb() {
 	}
 }
 
+// Play until user bored
 func playGames() {
 	again := true
 	for again {

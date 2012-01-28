@@ -25,12 +25,12 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
+	"flag"
 	"fmt"
-	"json"
+	"io/ioutil"
 	"log"
 	"os"
-	"io/ioutil"
-	"flag"
 	"path"
 )
 
@@ -41,10 +41,10 @@ type node struct {
 	Question string
 
 	// Leaves store animals.
-	Animal   string
+	Animal string
 
 	// Children
-	No, Yes  *node
+	No, Yes *node
 }
 
 func (n *node) isLeaf() bool {
